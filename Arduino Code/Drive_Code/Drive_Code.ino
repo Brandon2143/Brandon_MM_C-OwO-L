@@ -1,47 +1,21 @@
 #include <Wire.h>
 
-#define I2C_ADDRESS 0x60 // I2C address of the MiniMoto motor driver
-#define SDA_PIN 4        // SDA pin (connect to pin 4 on Seeed Xiao)
-#define SCL_PIN 5        // SCL pin (connect to pin 5 on Seeed Xiao)
-
 void setup()
 {
-    Serial.begin(115200); // Initialize Serial communication
-    Wire.begin(SDA_PIN, SCL_PIN); // Initialize I2C communication with SDA and SCL pins
-    Wire.setClock(400000); // Set I2C clock frequency to 400 kHz
-    analogWriteResolution(12); // Set PWM resolution to 12 bits (0-4095)
-    Serial.println("Hello, world!"); // Print "Hello, world!" to Serial Monitor
+  Wire.begin(); // join i2c bus (address optional for master)
 }
+
+byte x = 0;
 
 void loop()
 {
-    // Example: Sending commands to MiniMoto motor driver via I2C
-    // Start motor 0 forward at full speed
-    setMotorSpeed(0, 4095);
-    delay(1000);
-    
-    // Stop motor 0
-    setMotorSpeed(0, 0);
-    delay(1000);
-    
-    // Start motor 1 reverse at half speed
-    setMotorSpeed(1, 2048);
-    delay(1000);
-    
-    // Stop motor 1
-    setMotorSpeed(1, 0);
-    delay(1000);
+  Wire.beginTransmission(4); // transmit to device #4
+  Wire.write("x is ");        // sends five bytes
+  Wire.write(x);              // sends one byte  
+  Wire.endTransmission();    // stop transmitting
+  x++;
+  delay(500);
 }
-
-void setMotorSpeed(byte motor, int speed)
-{
-    Wire.beginTransmission(I2C_ADDRESS);
-    Wire.write(motor);      // Send motor number (0 or 1)
-    Wire.write(speed & 0xFF); // Send low byte of speed
-    Wire.write(speed >> 8);   // Send high byte of speed
-    Wire.endTransmission();
-}
-
 
 /*int PWM = 128;                 //maximum power
 static volatile int16_t countA=0;
